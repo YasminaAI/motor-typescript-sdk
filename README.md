@@ -1,7 +1,7 @@
 # Yasminaai TypeScript Library
 
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2FYasminaAI%2Fmotor-typescript-sdk)
-[![npm shield](https://img.shields.io/npm/v/)](https://www.npmjs.com/package/)
+[![npm shield](https://img.shields.io/npm/v/@yasmina/motor-typescript)](https://www.npmjs.com/package/@yasmina/motor-typescript)
 
 The Yasminaai TypeScript library provides convenient access to the Yasminaai APIs from TypeScript.
 
@@ -29,7 +29,7 @@ The Yasminaai TypeScript library provides convenient access to the Yasminaai API
 ## Installation
 
 ```sh
-npm i -s 
+npm i -s @yasmina/motor-typescript
 ```
 
 ## Reference
@@ -41,7 +41,7 @@ A full reference for this library is available [here](https://github.com/Yasmina
 Instantiate and use the client with the following:
 
 ```typescript
-import { YasminaaiApiClient } from "";
+import { YasminaaiApiClient } from "@yasmina/motor-typescript";
 
 const client = new YasminaaiApiClient({ token: "YOUR_TOKEN" });
 await client.quotes.requestQuotes({
@@ -58,7 +58,7 @@ await client.quotes.requestQuotes({
 This SDK allows you to configure different environments for API requests.
 
 ```typescript
-import { YasminaaiApiClient, YasminaaiApiEnvironment } from "YasminaaiApi";
+import { YasminaaiApiClient, YasminaaiApiEnvironment } from "@yasmina/motor-typescript";
 
 const client = new YasminaaiApiClient({
     environment: YasminaaiApiEnvironment.Default,
@@ -71,7 +71,7 @@ The SDK exports all request and response types as TypeScript interfaces. Simply 
 following namespace:
 
 ```typescript
-import { YasminaaiApi } from "YasminaaiApi";
+import { YasminaaiApi } from "@yasmina/motor-typescript";
 
 const request: YasminaaiApi.GetQuoteRequestsIdRequest = {
     ...
@@ -84,7 +84,7 @@ When the API returns a non-success status code (4xx or 5xx response), a subclass
 will be thrown.
 
 ```typescript
-import { YasminaaiApiError } from "YasminaaiApi";
+import { YasminaaiApiError } from "@yasmina/motor-typescript";
 
 try {
     await client.quotes.requestQuotes(...);
@@ -105,7 +105,7 @@ try {
 This SDK supports direct imports of subpackage clients, which allows JavaScript bundlers to tree-shake and include only the imported subpackage code. This results in much smaller bundle sizes.
 
 ```typescript
-import { QuotesClient } from 'YasminaaiApi/quotes';
+import { QuotesClient } from '@yasmina/motor-typescript/quotes';
 
 const client = new QuotesClient({...});
 ```
@@ -115,7 +115,7 @@ const client = new QuotesClient({...});
 If you would like to send additional headers as part of the request, use the `headers` request option.
 
 ```typescript
-import { YasminaaiApiClient } from "YasminaaiApi";
+import { YasminaaiApiClient } from "@yasmina/motor-typescript";
 
 const client = new YasminaaiApiClient({
     ...
@@ -210,7 +210,7 @@ console.log(rawResponse.headers['X-My-Header']);
 The SDK supports logging. You can configure the logger by passing in a `logging` object to the client options.
 
 ```typescript
-import { YasminaaiApiClient, logging } from "YasminaaiApi";
+import { YasminaaiApiClient, logging } from "@yasmina/motor-typescript";
 
 const client = new YasminaaiApiClient({
     ...
