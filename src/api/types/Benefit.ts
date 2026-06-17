@@ -4,6 +4,8 @@ export interface Benefit {
     quote_benefit_id?: string | undefined;
     id?: string | undefined;
     name?: string | undefined;
+    /** Arabic name of the benefit. Use this field instead of `name` when rendering Arabic UIs. */
+    name_ar?: string | undefined;
     amount?: number | undefined;
     vat?: number | undefined;
     url?: (string | null) | undefined;
