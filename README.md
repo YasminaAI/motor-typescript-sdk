@@ -1,6 +1,6 @@
 # Yasminaai TypeScript Library
 
-[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2FYasminaAI%2Fmotor-typescript-sdk)
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fyasminaai%2Fmotor-typescript-sdk)
 [![npm shield](https://img.shields.io/npm/v/@yasminaai/motor-typescript)](https://www.npmjs.com/package/@yasminaai/motor-typescript)
 
 The Yasminaai TypeScript library provides convenient access to the Yasminaai APIs from TypeScript.
@@ -34,7 +34,7 @@ npm i -s @yasminaai/motor-typescript
 
 ## Reference
 
-A full reference for this library is available [here](https://github.com/YasminaAI/motor-typescript-sdk/blob/HEAD/./reference.md).
+A full reference for this library is available [here](https://github.com/yasminaai/motor-typescript-sdk/blob/HEAD/./reference.md).
 
 ## Usage
 
