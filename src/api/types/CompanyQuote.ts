@@ -4,6 +4,27 @@ import type * as YasminaaiApi from "../index.js";
 
 export interface CompanyQuote {
     company_name?: string | undefined;
+    /** Arabic name of the insurance company. Use this field instead of `company_name` when rendering Arabic UIs. */
+    company_name_ar?: string | undefined;
+    /** Normalised insurance category used to group and filter quotes. Always one of `TPL`, `TPL +`, or `Comprehensive`. */
+    type?: CompanyQuote.Type | undefined;
+    /** The insurance type label exactly as the insurance provider intends it to be displayed. While `type` normalises all non-TPL / non-Comprehensive values into `TPL +`, this field preserves the original provider string (e.g. "TPL Plus", "Third Party Plus") and should be shown in the UI wherever the provider's own wording is preferred. */
+    insurance_type_display?: string | undefined;
+    /** Arabic translation of `insurance_type_display`. Use this field for Arabic UIs. Falls back to the English value for provider-specific types that do not have a translation. */
+    insurance_type_display_ar?: string | undefined;
+    /** CDN URL for the insurance company's logo. */
+    company_logo_url?: string | undefined;
+    /** CDN URL for the insurance company's square logo. */
+    square_company_logo_url?: string | undefined;
     prices?: YasminaaiApi.QuotePrice[] | undefined;
     benefits?: YasminaaiApi.Benefit[] | undefined;
+}
+
+export namespace CompanyQuote {
+    /** Normalised insurance category used to group and filter quotes. Always one of `TPL`, `TPL +`, or `Comprehensive`. */
+    export const Type = {
+        Tpl: "TPL",
+        Comprehensive: "Comprehensive",
+    } as const;
+    export type Type = (typeof Type)[keyof typeof Type];
 }

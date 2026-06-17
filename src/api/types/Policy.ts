@@ -11,6 +11,8 @@ export interface Policy {
     end_date?: string | undefined;
     is_claimed?: boolean | undefined;
     created_at?: string | undefined;
+    /** Timestamp when the provider policy document was attached. For issued motor policies this is the closest available issue/purchase timestamp. */
+    uploaded_at?: (string | null) | undefined;
     updated_at?: string | undefined;
     client_id?: string | undefined;
     canceled_at?: (string | null) | undefined;

@@ -55,7 +55,7 @@ export class PoliciesClient {
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.YasminaaiApiEnvironment.Default,
+                    environments.YasminaaiApiEnvironment.Sandbox,
                 `policies/${core.url.encodePathParam(carPolicy)}`,
             ),
             method: "GET",
@@ -91,19 +91,23 @@ export class PoliciesClient {
      * @throws {@link YasminaaiApi.UnauthorizedError}
      *
      * @example
-     *     await client.policies.listPolicies()
+     *     await client.policies.listPolicies({
+     *         date_from: "2026-06-01",
+     *         date_to: "2026-06-30",
+     *         include_aggregates: true
+     *     })
      */
     public listPolicies(
         request: YasminaaiApi.GetPoliciesRequest = {},
         requestOptions?: PoliciesClient.RequestOptions,
-    ): core.HttpResponsePromise<YasminaaiApi.Policy[]> {
+    ): core.HttpResponsePromise<YasminaaiApi.PaginatedPolicyResponse> {
         return core.HttpResponsePromise.fromPromise(this.__listPolicies(request, requestOptions));
     }
 
     private async __listPolicies(
         request: YasminaaiApi.GetPoliciesRequest = {},
         requestOptions?: PoliciesClient.RequestOptions,
-    ): Promise<core.WithRawResponse<YasminaaiApi.Policy[]>> {
+    ): Promise<core.WithRawResponse<YasminaaiApi.PaginatedPolicyResponse>> {
         const {
             quote_request_id: quoteRequestId,
             quote_price_id: quotePriceId,
@@ -115,6 +119,9 @@ export class PoliciesClient {
             min_price: minPrice,
             max_price: maxPrice,
             per_page: perPage,
+            date_from: dateFrom,
+            date_to: dateTo,
+            include_aggregates: includeAggregates,
         } = request;
         const _queryParams: Record<string, unknown> = {
             quote_request_id: quoteRequestId,
@@ -127,6 +134,9 @@ export class PoliciesClient {
             min_price: minPrice,
             max_price: maxPrice,
             per_page: perPage,
+            date_from: dateFrom != null ? dateFrom : undefined,
+            date_to: dateTo != null ? dateTo : undefined,
+            include_aggregates: includeAggregates,
         };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
@@ -138,7 +148,7 @@ export class PoliciesClient {
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.YasminaaiApiEnvironment.Default,
+                    environments.YasminaaiApiEnvironment.Sandbox,
                 "policies",
             ),
             method: "GET",
@@ -155,7 +165,7 @@ export class PoliciesClient {
             logging: this._options.logging,
         });
         if (_response.ok) {
-            return { data: _response.body as YasminaaiApi.Policy[], rawResponse: _response.rawResponse };
+            return { data: _response.body as YasminaaiApi.PaginatedPolicyResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
@@ -185,6 +195,7 @@ export class PoliciesClient {
      *
      * @example
      *     await client.policies.issuePolicy({
+     *         otp: "123456",
      *         quote_request_id: 123,
      *         quote_reference_id: "550e8400-e29b-41d4-a716-446655440000",
      *         quote_price_id: "550e8400-e29b-41d4-a716-446655440001"
@@ -211,7 +222,7 @@ export class PoliciesClient {
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.YasminaaiApiEnvironment.Default,
+                    environments.YasminaaiApiEnvironment.Sandbox,
                 "policies",
             ),
             method: "POST",

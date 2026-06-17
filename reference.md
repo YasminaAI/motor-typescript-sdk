@@ -102,7 +102,7 @@ await client.quotes.deleteQuote({
 </dl>
 </details>
 
-<details><summary><code>client.quotes.<a href="/src/api/resources/quotes/client/Client.ts">listQuotes</a>() -> YasminaaiApi.GetQuoteRequestsResponse</code></summary>
+<details><summary><code>client.quotes.<a href="/src/api/resources/quotes/client/Client.ts">listQuotes</a>({ ...params }) -> YasminaaiApi.PaginatedQuoteResponse</code></summary>
 <dl>
 <dd>
 
@@ -115,7 +115,12 @@ await client.quotes.deleteQuote({
 <dd>
 
 ```typescript
-await client.quotes.listQuotes();
+await client.quotes.listQuotes({
+    date_from: "2026-06-01",
+    date_to: "2026-06-30",
+    per_page: 10,
+    include_aggregates: true
+});
 
 ```
 </dd>
@@ -127,6 +132,14 @@ await client.quotes.listQuotes();
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**request:** `YasminaaiApi.GetQuoteRequestsRequest` 
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -172,10 +185,10 @@ The Quote IDs can be used later to issue a policy
 
 ```typescript
 await client.quotes.requestQuotes({
+    otp: "123456",
     owner_id: "owner_id",
     phone: "phone",
     birthdate: "2023-01-15",
-    car_sequence_number: "car_sequence_number",
     car_estimated_cost: 1.1
 });
 
@@ -279,7 +292,7 @@ await client.policies.showPolicy({
 </dl>
 </details>
 
-<details><summary><code>client.policies.<a href="/src/api/resources/policies/client/Client.ts">listPolicies</a>({ ...params }) -> YasminaaiApi.Policy[]</code></summary>
+<details><summary><code>client.policies.<a href="/src/api/resources/policies/client/Client.ts">listPolicies</a>({ ...params }) -> YasminaaiApi.PaginatedPolicyResponse</code></summary>
 <dl>
 <dd>
 
@@ -306,7 +319,11 @@ Listing requested policies
 <dd>
 
 ```typescript
-await client.policies.listPolicies();
+await client.policies.listPolicies({
+    date_from: "2026-06-01",
+    date_to: "2026-06-30",
+    include_aggregates: true
+});
 
 ```
 </dd>
@@ -370,6 +387,7 @@ For issuing a new policy
 
 ```typescript
 await client.policies.issuePolicy({
+    otp: "123456",
     quote_request_id: 123,
     quote_reference_id: "550e8400-e29b-41d4-a716-446655440000",
     quote_price_id: "550e8400-e29b-41d4-a716-446655440001"

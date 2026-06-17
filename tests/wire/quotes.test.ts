@@ -14,12 +14,25 @@ describe("QuotesClient", () => {
             phone: "phone",
             birthdate: "2023-01-15",
             car_sequence_number: 1,
+            custom_number: "custom_number",
             is_ownership_transfer: true,
             car_estimated_cost: 1.1,
             car_model_year: 1,
             start_date: "2023-01-15",
             drivers: [{ owner_id: "owner_id", birthdate: "2023-01-15", driving_percentage: 1 }],
-            quotes: [{ company_name: "company_name", prices: [{ vat_percentage: 15 }], benefits: [{}] }],
+            quotes: [
+                {
+                    company_name: "company_name",
+                    company_name_ar: "company_name_ar",
+                    type: "TPL",
+                    insurance_type_display: "insurance_type_display",
+                    insurance_type_display_ar: "insurance_type_display_ar",
+                    company_logo_url: "company_logo_url",
+                    square_company_logo_url: "square_company_logo_url",
+                    prices: [{ vat_percentage: 15 }],
+                    benefits: [{}],
+                },
+            ],
             client_id: "client_id",
             updated_at: "2024-01-15T09:30:00Z",
             created_at: "2024-01-15T09:30:00Z",
@@ -90,7 +103,7 @@ describe("QuotesClient", () => {
         }).rejects.toThrow(YasminaaiApi.NotFoundError);
     });
 
-    test("listQuotes", async () => {
+    test("listQuotes (1)", async () => {
         const server = mockServerPool.createServer();
         const client = new YasminaaiApiClient({ maxRetries: 0, token: "test", environment: server.baseUrl });
 
@@ -102,6 +115,7 @@ describe("QuotesClient", () => {
                     phone: "phone",
                     birthdate: "2023-01-15",
                     car_sequence_number: 1,
+                    custom_number: "custom_number",
                     is_ownership_transfer: true,
                     car_estimated_cost: 1.1,
                     car_model_year: 1,
@@ -125,22 +139,41 @@ describe("QuotesClient", () => {
             prev_page_url: "prev_page_url",
             to: 1,
             total: 1,
+            aggregates: { total_count: 24, by_month: { "2026-06": 24 } },
         };
 
         server.mockEndpoint().get("/quote-requests").respondWith().statusCode(200).jsonBody(rawResponseBody).build();
 
-        const response = await client.quotes.listQuotes();
+        const response = await client.quotes.listQuotes({
+            date_from: "2026-06-01",
+            date_to: "2026-06-30",
+            per_page: 10,
+            include_aggregates: true,
+        });
         expect(response).toEqual(rawResponseBody);
+    });
+
+    test("listQuotes (2)", async () => {
+        const server = mockServerPool.createServer();
+        const client = new YasminaaiApiClient({ maxRetries: 0, token: "test", environment: server.baseUrl });
+
+        const rawResponseBody = { key: "value" };
+
+        server.mockEndpoint().get("/quote-requests").respondWith().statusCode(401).jsonBody(rawResponseBody).build();
+
+        await expect(async () => {
+            return await client.quotes.listQuotes();
+        }).rejects.toThrow(YasminaaiApi.UnauthorizedError);
     });
 
     test("requestQuotes (1)", async () => {
         const server = mockServerPool.createServer();
         const client = new YasminaaiApiClient({ maxRetries: 0, token: "test", environment: server.baseUrl });
         const rawRequestBody = {
+            otp: "123456",
             owner_id: "owner_id",
             phone: "phone",
             birthdate: "2023-01-15",
-            car_sequence_number: "car_sequence_number",
             car_estimated_cost: 1.1,
         };
         const rawResponseBody = {
@@ -148,12 +181,25 @@ describe("QuotesClient", () => {
             phone: "phone",
             birthdate: "2023-01-15",
             car_sequence_number: 1,
+            custom_number: "custom_number",
             is_ownership_transfer: true,
             car_estimated_cost: 1.1,
             car_model_year: 1,
             start_date: "2023-01-15",
             drivers: [{ owner_id: "owner_id", birthdate: "2023-01-15", driving_percentage: 1 }],
-            quotes: [{ company_name: "company_name", prices: [{ vat_percentage: 15 }], benefits: [{}] }],
+            quotes: [
+                {
+                    company_name: "company_name",
+                    company_name_ar: "company_name_ar",
+                    type: "TPL",
+                    insurance_type_display: "insurance_type_display",
+                    insurance_type_display_ar: "insurance_type_display_ar",
+                    company_logo_url: "company_logo_url",
+                    square_company_logo_url: "square_company_logo_url",
+                    prices: [{ vat_percentage: 15 }],
+                    benefits: [{}],
+                },
+            ],
             client_id: "client_id",
             updated_at: "2024-01-15T09:30:00Z",
             created_at: "2024-01-15T09:30:00Z",
@@ -170,10 +216,10 @@ describe("QuotesClient", () => {
             .build();
 
         const response = await client.quotes.requestQuotes({
+            otp: "123456",
             owner_id: "owner_id",
             phone: "phone",
             birthdate: "2023-01-15",
-            car_sequence_number: "car_sequence_number",
             car_estimated_cost: 1.1,
         });
         expect(response).toEqual(rawResponseBody);
@@ -183,10 +229,10 @@ describe("QuotesClient", () => {
         const server = mockServerPool.createServer();
         const client = new YasminaaiApiClient({ maxRetries: 0, token: "test", environment: server.baseUrl });
         const rawRequestBody = {
+            otp: "otp",
             owner_id: "owner_id",
             phone: "phone",
             birthdate: "2023-01-15",
-            car_sequence_number: "car_sequence_number",
             car_estimated_cost: 1.1,
         };
         const rawResponseBody = { key: "value" };
@@ -202,10 +248,10 @@ describe("QuotesClient", () => {
 
         await expect(async () => {
             return await client.quotes.requestQuotes({
+                otp: "otp",
                 owner_id: "owner_id",
                 phone: "phone",
                 birthdate: "2023-01-15",
-                car_sequence_number: "car_sequence_number",
                 car_estimated_cost: 1.1,
             });
         }).rejects.toThrow(YasminaaiApi.UnauthorizedError);

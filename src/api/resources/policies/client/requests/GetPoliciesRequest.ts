@@ -2,7 +2,11 @@
 
 /**
  * @example
- *     {}
+ *     {
+ *         date_from: "2026-06-01",
+ *         date_to: "2026-06-30",
+ *         include_aggregates: true
+ *     }
  */
 export interface GetPoliciesRequest {
     quote_request_id?: number;
@@ -15,4 +19,10 @@ export interface GetPoliciesRequest {
     min_price?: number;
     max_price?: number;
     per_page?: number;
+    /** Inclusive lower bound for the policy date. For issued policies (`status=1`), this filters by `uploaded_at` (the provider policy issue timestamp) and falls back to `created_at` when `uploaded_at` is unavailable. For other statuses, this filters by `created_at`. */
+    date_from?: string;
+    /** Inclusive upper bound for the policy date. For issued policies (`status=1`), this filters by `uploaded_at` (the provider policy issue timestamp) and falls back to `created_at` when `uploaded_at` is unavailable. For other statuses, this filters by `created_at`. */
+    date_to?: string;
+    /** When true, includes policy totals, total price, and monthly buckets for the filtered result set. */
+    include_aggregates?: boolean;
 }

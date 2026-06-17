@@ -11,6 +11,8 @@ export interface QuoteResponse {
     birthdate?: string | undefined;
     /** The car sequence number from 9 digits */
     car_sequence_number?: number | undefined;
+    /** Custom car number for newly imported cars (present when `custom_number` was used in the request) */
+    custom_number?: string | undefined;
     /** Whether it was a car transfer or not */
     is_ownership_transfer?: boolean | undefined;
     /** The estimated cost of the car */
@@ -52,10 +54,31 @@ export namespace QuoteResponse {
     export namespace Quotes {
         export interface Item {
             company_name?: string | undefined;
+            /** Arabic name of the insurance company. Use this field instead of `company_name` when rendering Arabic UIs. */
+            company_name_ar?: string | undefined;
+            /** Normalised insurance category used to group and filter quotes. Always one of `TPL`, `TPL +`, or `Comprehensive`. */
+            type?: Item.Type | undefined;
+            /** The insurance type label exactly as the insurance provider intends it to be displayed. While `type` normalises all non-TPL / non-Comprehensive values into `TPL +`, this field preserves the original provider string (e.g. "TPL Plus", "Third Party Plus") and should be shown in the UI wherever the provider's own wording is preferred. */
+            insurance_type_display?: string | undefined;
+            /** Arabic translation of `insurance_type_display`. Use this field for Arabic UIs. Falls back to the English value for provider-specific types that do not have a translation. */
+            insurance_type_display_ar?: string | undefined;
+            /** CDN URL for the insurance company's logo. */
+            company_logo_url?: string | undefined;
+            /** CDN URL for the insurance company's square logo. */
+            square_company_logo_url?: string | undefined;
             /** An array representing each price. This will have the premium and the deductible */
             prices?: YasminaaiApi.QuotePrice[] | undefined;
             /** An array representing the different benefits offered by the company. Some of them are free and comes with the insurance, some are paid and optional */
             benefits?: YasminaaiApi.Benefit[] | undefined;
+        }
+
+        export namespace Item {
+            /** Normalised insurance category used to group and filter quotes. Always one of `TPL`, `TPL +`, or `Comprehensive`. */
+            export const Type = {
+                Tpl: "TPL",
+                Comprehensive: "Comprehensive",
+            } as const;
+            export type Type = (typeof Type)[keyof typeof Type];
         }
     }
 }

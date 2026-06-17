@@ -59,7 +59,7 @@ export class OtPsClient {
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.YasminaaiApiEnvironment.Default,
+                    environments.YasminaaiApiEnvironment.Sandbox,
                 "quote-otp",
             ),
             method: "POST",
@@ -136,7 +136,7 @@ export class OtPsClient {
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.YasminaaiApiEnvironment.Default,
+                    environments.YasminaaiApiEnvironment.Sandbox,
                 "issue-otp",
             ),
             method: "POST",

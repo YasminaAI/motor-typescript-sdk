@@ -2,7 +2,7 @@
 
 import type { BaseClientOptions, BaseRequestOptions } from "../../../../BaseClient.js";
 import { type NormalizedClientOptionsWithAuth, normalizeClientOptionsWithAuth } from "../../../../BaseClient.js";
-import { mergeHeaders } from "../../../../core/headers.js";
+import { mergeHeaders, mergeOnlyDefinedHeaders } from "../../../../core/headers.js";
 import * as core from "../../../../core/index.js";
 import * as environments from "../../../../environments.js";
 import { handleNonStatusCodeError } from "../../../../errors/handleNonStatusCodeError.js";
@@ -55,7 +55,7 @@ export class QuotesClient {
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.YasminaaiApiEnvironment.Default,
+                    environments.YasminaaiApiEnvironment.Sandbox,
                 `quote-requests/${core.url.encodePathParam(id)}`,
             ),
             method: "GET",
@@ -120,7 +120,7 @@ export class QuotesClient {
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.YasminaaiApiEnvironment.Default,
+                    environments.YasminaaiApiEnvironment.Sandbox,
                 `quote-requests/${core.url.encodePathParam(id)}`,
             ),
             method: "DELETE",
@@ -156,20 +156,42 @@ export class QuotesClient {
     }
 
     /**
+     * @param {YasminaaiApi.GetQuoteRequestsRequest} request
      * @param {QuotesClient.RequestOptions} requestOptions - Request-specific configuration.
      *
+     * @throws {@link YasminaaiApi.UnauthorizedError}
+     *
      * @example
-     *     await client.quotes.listQuotes()
+     *     await client.quotes.listQuotes({
+     *         date_from: "2026-06-01",
+     *         date_to: "2026-06-30",
+     *         per_page: 10,
+     *         include_aggregates: true
+     *     })
      */
     public listQuotes(
+        request: YasminaaiApi.GetQuoteRequestsRequest = {},
         requestOptions?: QuotesClient.RequestOptions,
-    ): core.HttpResponsePromise<YasminaaiApi.GetQuoteRequestsResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__listQuotes(requestOptions));
+    ): core.HttpResponsePromise<YasminaaiApi.PaginatedQuoteResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__listQuotes(request, requestOptions));
     }
 
     private async __listQuotes(
+        request: YasminaaiApi.GetQuoteRequestsRequest = {},
         requestOptions?: QuotesClient.RequestOptions,
-    ): Promise<core.WithRawResponse<YasminaaiApi.GetQuoteRequestsResponse>> {
+    ): Promise<core.WithRawResponse<YasminaaiApi.PaginatedQuoteResponse>> {
+        const {
+            date_from: dateFrom,
+            date_to: dateTo,
+            per_page: perPage,
+            include_aggregates: includeAggregates,
+        } = request;
+        const _queryParams: Record<string, unknown> = {
+            date_from: dateFrom != null ? dateFrom : undefined,
+            date_to: dateTo != null ? dateTo : undefined,
+            per_page: perPage,
+            include_aggregates: includeAggregates,
+        };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,
@@ -180,12 +202,16 @@ export class QuotesClient {
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.YasminaaiApiEnvironment.Default,
+                    environments.YasminaaiApiEnvironment.Sandbox,
                 "quote-requests",
             ),
             method: "GET",
             headers: _headers,
-            queryString: core.url.queryBuilder().mergeAdditional(requestOptions?.queryParams).build(),
+            queryString: core.url
+                .queryBuilder()
+                .addMany(_queryParams)
+                .mergeAdditional(requestOptions?.queryParams)
+                .build(),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -193,18 +219,20 @@ export class QuotesClient {
             logging: this._options.logging,
         });
         if (_response.ok) {
-            return {
-                data: _response.body as YasminaaiApi.GetQuoteRequestsResponse,
-                rawResponse: _response.rawResponse,
-            };
+            return { data: _response.body as YasminaaiApi.PaginatedQuoteResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
-            throw new errors.YasminaaiApiError({
-                statusCode: _response.error.statusCode,
-                body: _response.error.body,
-                rawResponse: _response.rawResponse,
-            });
+            switch (_response.error.statusCode) {
+                case 401:
+                    throw new YasminaaiApi.UnauthorizedError(_response.error.body as unknown, _response.rawResponse);
+                default:
+                    throw new errors.YasminaaiApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
         }
 
         return handleNonStatusCodeError(_response.error, _response.rawResponse, "GET", "/quote-requests");
@@ -221,10 +249,10 @@ export class QuotesClient {
      *
      * @example
      *     await client.quotes.requestQuotes({
+     *         otp: "123456",
      *         owner_id: "owner_id",
      *         phone: "phone",
      *         birthdate: "2023-01-15",
-     *         car_sequence_number: "car_sequence_number",
      *         car_estimated_cost: 1.1
      *     })
      */
@@ -239,17 +267,19 @@ export class QuotesClient {
         request: YasminaaiApi.PostQuoteRequestsRequest,
         requestOptions?: QuotesClient.RequestOptions,
     ): Promise<core.WithRawResponse<YasminaaiApi.QuoteResponse>> {
+        const { "Accept-Language": acceptLanguage, ..._body } = request;
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,
             this._options?.headers,
+            mergeOnlyDefinedHeaders({ "Accept-Language": acceptLanguage }),
             requestOptions?.headers,
         );
         const _response = await core.fetcher({
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.YasminaaiApiEnvironment.Default,
+                    environments.YasminaaiApiEnvironment.Sandbox,
                 "quote-requests",
             ),
             method: "POST",
@@ -257,7 +287,7 @@ export class QuotesClient {
             contentType: "application/json",
             queryString: core.url.queryBuilder().mergeAdditional(requestOptions?.queryParams).build(),
             requestType: "json",
-            body: request,
+            body: _body,
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,

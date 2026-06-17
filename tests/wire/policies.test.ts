@@ -20,6 +20,7 @@ describe("PoliciesClient", () => {
             end_date: "end_date",
             is_claimed: true,
             created_at: "created_at",
+            uploaded_at: "2024-01-15T09:30:00Z",
             updated_at: "updated_at",
             client_id: "client_id",
             canceled_at: "canceled_at",
@@ -39,29 +40,53 @@ describe("PoliciesClient", () => {
         const server = mockServerPool.createServer();
         const client = new YasminaaiApiClient({ maxRetries: 0, token: "test", environment: server.baseUrl });
 
-        const rawResponseBody = [
-            {
-                id: 1,
-                meta_data: { key: "value" },
-                start_date: "start_date",
-                provider_policy_id: 1,
-                provider_policy: "provider_policy",
-                order_status: 1,
-                approval_status: 1,
-                end_date: "end_date",
-                is_claimed: true,
-                created_at: "created_at",
-                updated_at: "updated_at",
-                client_id: "client_id",
-                canceled_at: "canceled_at",
-                invoice: "invoice",
-                cancellation_document: "cancellation_document",
+        const rawResponseBody = {
+            current_page: 1,
+            data: [
+                {
+                    id: 1,
+                    meta_data: { key: "value" },
+                    start_date: "start_date",
+                    provider_policy_id: 1,
+                    provider_policy: "provider_policy",
+                    order_status: 1,
+                    approval_status: 1,
+                    end_date: "end_date",
+                    is_claimed: true,
+                    created_at: "created_at",
+                    uploaded_at: "2024-01-15T09:30:00Z",
+                    updated_at: "updated_at",
+                    client_id: "client_id",
+                    canceled_at: "canceled_at",
+                    invoice: "invoice",
+                    cancellation_document: "cancellation_document",
+                },
+            ],
+            first_page_url: "first_page_url",
+            from: 1,
+            last_page: 1,
+            last_page_url: "last_page_url",
+            links: [{ url: "url", label: "label", active: true }],
+            next_page_url: "next_page_url",
+            path: "path",
+            per_page: 1,
+            prev_page_url: "prev_page_url",
+            to: 1,
+            total: 1,
+            aggregates: {
+                total_count: 12,
+                total_price: 42850.75,
+                by_month: { "2026-06": { count: 12, total_price: 42850.75 } },
             },
-        ];
+        };
 
         server.mockEndpoint().get("/policies").respondWith().statusCode(200).jsonBody(rawResponseBody).build();
 
-        const response = await client.policies.listPolicies();
+        const response = await client.policies.listPolicies({
+            date_from: "2026-06-01",
+            date_to: "2026-06-30",
+            include_aggregates: true,
+        });
         expect(response).toEqual(rawResponseBody);
     });
 
@@ -82,6 +107,7 @@ describe("PoliciesClient", () => {
         const server = mockServerPool.createServer();
         const client = new YasminaaiApiClient({ maxRetries: 0, token: "test", environment: server.baseUrl });
         const rawRequestBody = {
+            otp: "123456",
             quote_request_id: 123,
             quote_reference_id: "550e8400-e29b-41d4-a716-446655440000",
             quote_price_id: "550e8400-e29b-41d4-a716-446655440001",
@@ -97,6 +123,7 @@ describe("PoliciesClient", () => {
             end_date: "end_date",
             is_claimed: true,
             created_at: "created_at",
+            uploaded_at: "2024-01-15T09:30:00Z",
             updated_at: "updated_at",
             client_id: "client_id",
             canceled_at: "canceled_at",
@@ -114,6 +141,7 @@ describe("PoliciesClient", () => {
             .build();
 
         const response = await client.policies.issuePolicy({
+            otp: "123456",
             quote_request_id: 123,
             quote_reference_id: "550e8400-e29b-41d4-a716-446655440000",
             quote_price_id: "550e8400-e29b-41d4-a716-446655440001",
@@ -125,6 +153,7 @@ describe("PoliciesClient", () => {
         const server = mockServerPool.createServer();
         const client = new YasminaaiApiClient({ maxRetries: 0, token: "test", environment: server.baseUrl });
         const rawRequestBody = {
+            otp: "otp",
             quote_request_id: 1,
             quote_reference_id: "quote_reference_id",
             quote_price_id: "quote_price_id",
@@ -142,6 +171,7 @@ describe("PoliciesClient", () => {
 
         await expect(async () => {
             return await client.policies.issuePolicy({
+                otp: "otp",
                 quote_request_id: 1,
                 quote_reference_id: "quote_reference_id",
                 quote_price_id: "quote_price_id",
@@ -153,6 +183,7 @@ describe("PoliciesClient", () => {
         const server = mockServerPool.createServer();
         const client = new YasminaaiApiClient({ maxRetries: 0, token: "test", environment: server.baseUrl });
         const rawRequestBody = {
+            otp: "otp",
             quote_request_id: 1,
             quote_reference_id: "quote_reference_id",
             quote_price_id: "quote_price_id",
@@ -170,6 +201,7 @@ describe("PoliciesClient", () => {
 
         await expect(async () => {
             return await client.policies.issuePolicy({
+                otp: "otp",
                 quote_request_id: 1,
                 quote_reference_id: "quote_reference_id",
                 quote_price_id: "quote_price_id",

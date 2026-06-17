@@ -3,12 +3,15 @@
 /**
  * @example
  *     {
+ *         otp: "123456",
  *         quote_request_id: 123,
  *         quote_reference_id: "550e8400-e29b-41d4-a716-446655440000",
  *         quote_price_id: "550e8400-e29b-41d4-a716-446655440001"
  *     }
  */
 export interface PostPoliciesRequest {
+    /** The OTP received by the customer from the Issue OTP API */
+    otp: string;
     /** ID of the car quote request */
     quote_request_id: number;
     /** Unique identifier for the quote reference ID (coming from POST /quote-requests) */

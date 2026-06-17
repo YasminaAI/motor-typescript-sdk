@@ -45,10 +45,10 @@ import { YasminaaiApiClient } from "@yasminaai/motor-typescript";
 
 const client = new YasminaaiApiClient({ token: "YOUR_TOKEN" });
 await client.quotes.requestQuotes({
+    otp: "123456",
     owner_id: "owner_id",
     phone: "phone",
     birthdate: "2023-01-15",
-    car_sequence_number: "car_sequence_number",
     car_estimated_cost: 1.1
 });
 ```
@@ -61,7 +61,7 @@ This SDK allows you to configure different environments for API requests.
 import { YasminaaiApiClient, YasminaaiApiEnvironment } from "@yasminaai/motor-typescript";
 
 const client = new YasminaaiApiClient({
-    environment: YasminaaiApiEnvironment.Default,
+    environment: YasminaaiApiEnvironment.Sandbox,
 });
 ```
 
